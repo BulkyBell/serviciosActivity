@@ -10,27 +10,35 @@ import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
-    private val RESULTCODE: Int = 420
+    val RESULTCODE: Int = 420
 
-    private val launcher = registerForActivityResult(
+    var launcher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == RESULT_OK) {
-            val data = result.data
-            val primesList = data?.getIntegerArrayListExtra("resultadoArray")
-            Log.d("resultadoArray", primesList.toString())
-            val textResult: TextView = findViewById(R.id.textResult)
-            textResult.text = primesList?.joinToString(", ") ?: "No hay números primos."
-        }
+    ) {
+        val intent = it.data
+        Log.d("resultadoArray", it.resultCode.toString())
+        Log.d("resultadoArray", it.data?.getStringExtra("ejemplo").toString())
+        var textResult: TextView = findViewById<TextView>(R.id.textResult)
+        textResult.text = intent?.getIntegerArrayListExtra("resultadoArray").toString()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val botonAbrir: Button = findViewById(R.id.buttonAndroidX)
+        var botonAbrir: Button = findViewById<Button>(R.id.buttonAndroidX)
 
         botonAbrir.setOnClickListener {
             launcher.launch(Intent(this, SCRprimosXActivity::class.java))
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        var textResult: TextView = findViewById<TextView>(R.id.textResult)
+        textResult.text= data?.getIntegerArrayListExtra("resultadoArray").toString()
+    }
+
+    companion object {
+        const val ACTION_RESULTADO = "com.example.serviciosactivity.ACTION_RESULTADO"
     }
 }

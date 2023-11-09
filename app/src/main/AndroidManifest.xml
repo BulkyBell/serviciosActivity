@@ -12,6 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ServiciosActivity"
         tools:targetApi="34">
+        <service
+            android:name=".PrimosService"
+            android:enabled="true"
+            android:exported="true"></service>
         <activity
             android:name=".SCRprimosXActivity"
             android:exported="false" />
