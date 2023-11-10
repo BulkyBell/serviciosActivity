@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -37,12 +38,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         val filter = IntentFilter(ACTION_RESULTADO)
-        registerReceiver(receiver, filter)
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        unregisterReceiver(receiver)
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver)
     }
 
     private fun displayResult(primesList: ArrayList<Int>?) {

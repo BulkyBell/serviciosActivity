@@ -1,22 +1,24 @@
 package com.example.serviciosactivity
 
-import android.app.IntentService
+import android.content.Context
 import android.content.Intent
-import java.util.*
+import androidx.work.Worker
+import androidx.work.WorkerParameters
 
-class PrimosIntentService : IntentService("PrimosIntentService") {
+class PrimosWorker(context: Context, workerParams: WorkerParameters) :
+    Worker(context, workerParams) {
 
-    override fun onHandleIntent(intent: Intent?) {
-        val numero = intent?.getIntExtra("numero", 0) ?: 0
+    override fun doWork(): Result {
+        val numero = inputData.getInt("numero", 0)
 
         val primesList = calcularPrimos(numero)
 
-        val intentResultado = Intent().apply {
-            action = MainActivity.ACTION_RESULTADO
-            putIntegerArrayListExtra("resultadoArray", primesList)
-        }
+        val intentResultado = androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(applicationContext)
+            .sendBroadcast(Intent(MainActivity.ACTION_RESULTADO).apply {
+                putIntegerArrayListExtra("resultadoArray", primesList)
+            })
 
-        sendBroadcast(intentResultado)
+        return Result.success()
     }
 
     private fun calcularPrimos(n: Int): ArrayList<Int> {

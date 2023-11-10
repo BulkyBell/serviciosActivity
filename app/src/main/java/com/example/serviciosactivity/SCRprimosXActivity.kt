@@ -1,10 +1,12 @@
 package com.example.serviciosactivity
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 
 class SCRprimosXActivity : AppCompatActivity() {
 
@@ -17,13 +19,14 @@ class SCRprimosXActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.calcularButton).setOnClickListener {
-            val numero: Int = findViewById<TextView>(R.id.editTextNumber).text.toString().toIntOrNull() ?: 0
+            val numero: Int =
+                findViewById<TextView>(R.id.editTextNumber).text.toString().toIntOrNull() ?: 0
 
-            val intentServicio = Intent(this, PrimosIntentService::class.java).apply {
-                putExtra("numero", numero)
-            }
+            val workRequest = OneTimeWorkRequest.Builder(PrimosWorker::class.java)
+                .setInputData(workDataOf("numero" to numero))
+                .build()
 
-            startService(intentServicio)
+            WorkManager.getInstance(this).enqueue(workRequest)
         }
     }
 }
