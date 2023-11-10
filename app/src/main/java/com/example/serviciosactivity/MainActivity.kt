@@ -1,6 +1,9 @@
 package com.example.serviciosactivity
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -10,32 +13,49 @@ import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
-    val RESULTCODE: Int = 420
+    private val RESULTCODE: Int = 420
+    private val receiver: ResultadoReceiver = ResultadoReceiver()
 
-    var launcher = registerForActivityResult(
+    private val launcher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) {
-        val intent = it.data
-        Log.d("resultadoArray", it.resultCode.toString())
-        Log.d("resultadoArray", it.data?.getStringExtra("ejemplo").toString())
-        var textResult: TextView = findViewById<TextView>(R.id.textResult)
-        textResult.text = intent?.getIntegerArrayListExtra("resultadoArray").toString()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val data = result.data
+            val primesList = data?.getIntegerArrayListExtra("resultadoArray")
+            displayResult(primesList)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        var botonAbrir: Button = findViewById<Button>(R.id.buttonAndroidX)
+
+        val botonAbrir: Button = findViewById(R.id.buttonAndroidX)
 
         botonAbrir.setOnClickListener {
             launcher.launch(Intent(this, SCRprimosXActivity::class.java))
         }
+
+        val filter = IntentFilter(ACTION_RESULTADO)
+        registerReceiver(receiver, filter)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        var textResult: TextView = findViewById<TextView>(R.id.textResult)
-        textResult.text= data?.getIntegerArrayListExtra("resultadoArray").toString()
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(receiver)
+    }
+
+    private fun displayResult(primesList: ArrayList<Int>?) {
+        Log.d("resultadoArray", primesList.toString())
+        val textResult: TextView = findViewById(R.id.textResult)
+        textResult.text = primesList?.joinToString(", ") ?: "No hay números primos."
+    }
+
+    inner class ResultadoReceiver : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val primesList = intent?.getIntegerArrayListExtra("resultadoArray")
+            displayResult(primesList)
+        }
     }
 
     companion object {

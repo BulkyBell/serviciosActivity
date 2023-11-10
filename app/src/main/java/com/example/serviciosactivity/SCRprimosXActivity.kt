@@ -19,7 +19,7 @@ class SCRprimosXActivity : AppCompatActivity() {
         findViewById<Button>(R.id.calcularButton).setOnClickListener {
             val numero: Int = findViewById<TextView>(R.id.editTextNumber).text.toString().toIntOrNull() ?: 0
 
-            val intentServicio = Intent(this, PrimosService::class.java).apply {
+            val intentServicio = Intent(this, PrimosIntentService::class.java).apply {
                 putExtra("numero", numero)
             }
 
