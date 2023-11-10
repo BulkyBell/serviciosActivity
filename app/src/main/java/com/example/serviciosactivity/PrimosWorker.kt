@@ -1,9 +1,9 @@
 package com.example.serviciosactivity
 
 import android.content.Context
-import android.content.Intent
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.eventbus.EventBus
 
 class PrimosWorker(context: Context, workerParams: WorkerParameters) :
     Worker(context, workerParams) {
@@ -13,10 +13,8 @@ class PrimosWorker(context: Context, workerParams: WorkerParameters) :
 
         val primesList = calcularPrimos(numero)
 
-        val intentResultado = androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(applicationContext)
-            .sendBroadcast(Intent(MainActivity.ACTION_RESULTADO).apply {
-                putIntegerArrayListExtra("resultadoArray", primesList)
-            })
+        // Publicar un evento utilizando EventBus
+        EventBus.getDefault().post(PrimosEvent(primesList))
 
         return Result.success()
     }
@@ -39,3 +37,5 @@ class PrimosWorker(context: Context, workerParams: WorkerParameters) :
         }
     }
 }
+
+class PrimosEvent(val primesList: ArrayList<Int>?)
